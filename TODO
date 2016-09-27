@@ -1,0 +1,20 @@
+TODO
+
+index
+welcome people to the app
+link to pages for each user
+also sign up for your own page
+
+
+user pages
+map
+if logged in, let them edit their own
+
+
+if logged in, default page shouldn't ask them to register
+should instead allow them to edit their map
+and also tell them about other people's maps
+
+make a map view/thing -- maybe {}/profile/map?
+test out binding JSON to topojson
+figure out how to edit and then PUT
