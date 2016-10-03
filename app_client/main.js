@@ -22,7 +22,8 @@
       .when('/profile', {
         templateUrl: '/profile/profile.view.html',
         controller: 'profileCtrl',
-        controllerAs: 'vm'
+        controllerAs: 'vm',
+        //resolve: {'meanTopoJSON': function(meanTopoJSON) {return meanTopoJSON.promise}}
       })
       .when('/users/:username', {
         templateUrl: '/users/users.view.html',
@@ -35,7 +36,7 @@
     $locationProvider.html5Mode(true);
   }
 
-  function run($rootScope, $location, authentication) {
+  function run($rootScope, $location, $http, authentication, meanTopoJSON) {
     $rootScope.$on('$routeChangeStart', function(event, nextRoute, currentRoute) {
       if ($location.path() === '/profile' && !authentication.isLoggedIn()) {
         $location.path('/');
@@ -46,6 +47,6 @@
   angular
     .module('meanApp')
     .config(['$routeProvider', '$locationProvider', config])
-    .run(['$rootScope', '$location', 'authentication', run]);
+    .run(['$rootScope', '$location', '$http', 'authentication', 'meanTopoJSON', run]);
 
 })();
