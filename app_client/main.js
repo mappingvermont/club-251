@@ -1,6 +1,6 @@
 (function () {
 
-  angular.module('meanApp', ['ngRoute']);
+  angular.module('meanApp', ['ngRoute', 'leaflet-directive']);
 
   function config ($routeProvider, $locationProvider) {
     $routeProvider
@@ -22,8 +22,7 @@
       .when('/profile', {
         templateUrl: '/profile/profile.view.html',
         controller: 'profileCtrl',
-        controllerAs: 'vm',
-        //resolve: {'meanTopoJSON': function(meanTopoJSON) {return meanTopoJSON.promise}}
+        controllerAs: 'vm'
       })
       .when('/users/:username', {
         templateUrl: '/users/users.view.html',
@@ -36,7 +35,7 @@
     $locationProvider.html5Mode(true);
   }
 
-  function run($rootScope, $location, $http, authentication, meanTopoJSON) {
+  function run($rootScope, $location, $http, authentication) {
     $rootScope.$on('$routeChangeStart', function(event, nextRoute, currentRoute) {
       if ($location.path() === '/profile' && !authentication.isLoggedIn()) {
         $location.path('/');
@@ -47,6 +46,6 @@
   angular
     .module('meanApp')
     .config(['$routeProvider', '$locationProvider', config])
-    .run(['$rootScope', '$location', '$http', 'authentication', 'meanTopoJSON', run]);
+    .run(['$rootScope', '$location', '$http', 'authentication', run]);
 
 })();

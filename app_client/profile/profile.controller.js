@@ -4,21 +4,42 @@
     .module('meanApp')
     .controller('profileCtrl', profileCtrl);
 
-  profileCtrl.$inject = ['$http', '$location', 'meanData', 'meanTopoJSON'];
-  function profileCtrl($http, $location, meanData, meanTopoJSON) {
+
+  profileCtrl.$inject = ['$http', '$location', '$scope', 'leafletData', 'meanData', 'meanTopoJSON'];
+  function profileCtrl($http, $location, $scope, leafletData, meanData, meanTopoJSON) {
+
+    angular.extend($scope, {
+            vermont: {
+                lat: 43.9,
+                lng: -72.4,
+                zoom: 8
+            },
+            defaults: {
+                scrollWheelZoom: false
+            },
+             markers: {
+                    m1: {
+                        lat: 43.9,
+                        lng: -72.5,
+                        focus: true,
+                        draggable: false,
+                        message: "Hi there!",
+                        icon: {}
+                    }
+                }
+        });
+
+
     var vm = this;
 
     vm.user = {};
-
-    //notes http://stackoverflow.com/questions/16286605/
-
 
     meanData.getProfile()
       .success(function(data) {
 
         meanTopoJSON.promise.then(function(topojson){
           console.log('got topojson')
-          joinTopoJson($http, data, topojson, vm)
+          joinTopoJson($http, data, topojson, vm, leafletData, $scope)
 
           });
 
@@ -26,12 +47,10 @@
       .error(function (e) {
         console.log(e);
       });
+
   }
 
-function joinTopoJson($http, userData, topojson, vm) {
-
-        console.log('started join')
-        console.log(topojson)
+function joinTopoJson($http, userData, topojson, vm, leafletData, $scope) {
 
         var geometries = topojson.data.objects.towns.geometries;
 
@@ -39,11 +58,19 @@ function joinTopoJson($http, userData, topojson, vm) {
           var fips6 = geometries[i].properties.fips6
 
           geometries[i].properties.status = userData.towns[fips6];
-          //console.log(geometries[i])
 
         }
         console.log('finished join')
-        userData.topojson = topojson
+        //userData.topojson = topojson.data
+        userData.topojson = 'placeholder'
+
+        leafletData.getMap().then(function(map) {
+          var marker = L.marker($scope.markers.m1)
+          marker.addTo(map);
+        //map.addLayer(markers);
+        //map.fitBounds(markers.getBounds());
+      });
+
         vm.user = userData
         console.log(vm.user)
     

@@ -22,6 +22,4 @@ gulp.task('watch', function() {
   });
 });
 
-//gulp.task('serve', serve('./app_client/app.min.js'));
-
 gulp.task('default', ['scripts', 'watch']);
