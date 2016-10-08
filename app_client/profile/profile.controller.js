@@ -28,20 +28,19 @@
         meanData.getProfile()
             .success(function(data) {
 
-                joinTopoJson(data, vm, leafletData)
+                joinTopoJson($scope, data, vm, leafletData)
 
             })
             .error(function(e) {
                 console.log(e);
             });
 
-        $scope.messageClick = function() {
-              console.log('popup clicked!');
+        //$scope.messageClick = function(fips6) {
+        $scope.messageClick = function(data) {
+              console.log('option ' + data.town_status + ' selected for ' + data.fips6 + '!');
             };
 
         $scope.$on('leafletDirectiveMap.popupopen', function(event, leafletEvent) {
-
-            console.log('pop up opened!')
 
             // Create the popup view when is opened
             var feature = leafletEvent.leafletEvent.popup.options.feature;
@@ -50,11 +49,12 @@
             newScope.stream = feature;
 
             $compile(leafletEvent.leafletEvent.popup._contentNode)(newScope);
+
         });
 
     }
 
-    function joinTopoJson(userData, vm, leafletData) {
+    function joinTopoJson($scope, userData, vm, leafletData) {
 
         leafletData.getMap().then(function(map) {
             var topoJSONlayer = omnivore.topojson('../data/towns.json')
@@ -64,11 +64,11 @@
 
                     var fips6 = layer.feature.properties.fips6
                     layer.feature.properties.status = userData.towns[fips6]
-                    console.log(layer.feature.properties)
+                    //console.log(layer.feature.properties)
 
                     style_poly(layer)
 
-                    buildPopup(layer.feature, layer);
+                    buildPopup($scope, layer.feature, layer);
 
                 });
             })
@@ -103,18 +103,20 @@
         })
     }
 
-    function buildPopup(feature, layer) {
+    function buildPopup($scope, feature, layer) {
 
         var divNode = document.createElement('DIV');
 
-        var popup = "<div class='popup_box_header'><strong>" + feature.properties.town + "</strong></div>";
-        popup += "<hr />";
+        $scope.data = {'town_name': feature.properties.town,
+                       'fips6': feature.properties.fips6,
+                        'town_status': ''}
 
-        popup += '<button type="submit" ng-click="messageClick()"> Click Me!</button><br>'
+        $scope.status_options = [false, 'biking', 'driving']
 
-        var status = feature.properties.status
-
-        popup += status + "<br>";
+        var popup = "<div class='popup_box_header'>{{data.town_name}}<strong></strong></div><hr />"
+        popup += '<select name="repeatSelect" id="repeatSelect" ng-model="data.town_status" ng-change=messageClick(data)>'
+        popup += '<option ng-repeat="option in status_options" value="{{option}}">{{option}}</option>'
+        popup += '</select>'
 
         divNode.innerHTML = popup
         layer.bindPopup(divNode, {
@@ -122,11 +124,6 @@
             autoPan: true
         })
 
-    }
-
-    function messageClick() {
-
-        console.log('clicked')
     }
 
 
