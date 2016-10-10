@@ -35,7 +35,6 @@
                 console.log(e);
             });
 
-        //$scope.messageClick = function(fips6) {
         $scope.messageClick = function(data) {
               console.log('option ' + data.town_status + ' selected for ' + data.fips6 + '!');
             };
@@ -83,7 +82,7 @@
     }
 
     var styles = {
-        false: '#4daf4a',
+        'Not yet': '#4daf4a',
         'FARM': '#e41a1c',
         'BROOK': '#377eb8',
         'POND': '#984ea3',
@@ -109,14 +108,12 @@
 
         $scope.data = {'town_name': feature.properties.town,
                        'fips6': feature.properties.fips6,
-                        'town_status': ''}
-
-        $scope.status_options = [false, 'biking', 'driving']
+                       'town_status': feature.properties.status,
+                       'type': 'select',
+                       'status_options': ['Not yet', 'biking', 'driving']} 
 
         var popup = "<div class='popup_box_header'>{{data.town_name}}<strong></strong></div><hr />"
-        popup += '<select name="repeatSelect" id="repeatSelect" ng-model="data.town_status" ng-change=messageClick(data)>'
-        popup += '<option ng-repeat="option in status_options" value="{{option}}">{{option}}</option>'
-        popup += '</select>'
+        popup += '<select ng-model="data.town_status" ng-options="v for v in data.status_options"></select>'
 
         divNode.innerHTML = popup
         layer.bindPopup(divNode, {

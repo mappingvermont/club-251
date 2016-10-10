@@ -10,7 +10,7 @@
     var towns = {}
 
     for (i=0; i < fips6_list.length; i++) {
-      towns[fips6_list[i]] = false
+      towns[fips6_list[i]] = 'Not yet'
     }
 
     return towns
