@@ -27,16 +27,19 @@
 
         meanData.getProfile()
             .success(function(data) {
-
-                joinTopoJson($scope, data, vm, leafletData)
+                joinTopoJson(data, vm, leafletData)
 
             })
             .error(function(e) {
                 console.log(e);
             });
 
-        $scope.messageClick = function(data) {
-              console.log('option ' + data.town_status + ' selected for ' + data.fips6 + '!');
+        $scope.messageClick = function(town) {
+            console.log(town)
+              console.log('option ' + town.status + ' selected for ' + town.fips6 + '!');
+
+            town.leafletObject._popup._source.feature.properties.status = town.status
+
             };
 
         $scope.$on('leafletDirectiveMap.popupopen', function(event, leafletEvent) {
@@ -44,30 +47,50 @@
             // Create the popup view when is opened
             var feature = leafletEvent.leafletEvent.popup.options.feature;
 
+            var properties = leafletEvent.leafletObject._popup._source.feature.properties
+
             var newScope = $scope.$new();
             newScope.stream = feature;
 
+            newScope.town = {}
+
+            newScope.town.name = properties.town
+            newScope.town.fips6 = properties.fips6
+            newScope.town.status = properties.status
+            newScope.town.status_options = ['Not yet', 'driving', 'walking']
+            newScope.town.leafletObject = leafletEvent.leafletObject
+            
             $compile(leafletEvent.leafletEvent.popup._contentNode)(newScope);
 
         });
 
     }
 
-    function joinTopoJson($scope, userData, vm, leafletData) {
+    function joinTopoJson(userData, vm, leafletData) {
 
         leafletData.getMap().then(function(map) {
             var topoJSONlayer = omnivore.topojson('../data/towns.json')
 
+            //$scope.data = userData
+
             .on('ready', function() {
+
+                //$scope.data.status_options = ['Not yet', 'biking', 'driving']
+
                 topoJSONlayer.eachLayer(function(layer) {
 
+                    //$scope.layer = layer
+                    //console.log($scope.layer)
+                    console.log(userData)
+
                     var fips6 = layer.feature.properties.fips6
+                    //$scope.layer.feature.properties.status = userData.towns[fips6]
                     layer.feature.properties.status = userData.towns[fips6]
                     //console.log(layer.feature.properties)
 
                     style_poly(layer)
 
-                    buildPopup($scope, layer.feature, layer);
+                    buildPopup(layer.feature, layer);
 
                 });
             })
@@ -95,6 +118,8 @@
 
         var style_color = (styles[layer.feature.properties.status] || styles['other']);
 
+        console.log('styling')
+
         layer.setStyle({
             color: style_color,
             fill: style_color,
@@ -102,18 +127,13 @@
         })
     }
 
-    function buildPopup($scope, feature, layer) {
+    function buildPopup(feature, layer) {
 
         var divNode = document.createElement('DIV');
 
-        $scope.data = {'town_name': feature.properties.town,
-                       'fips6': feature.properties.fips6,
-                       'town_status': feature.properties.status,
-                       'type': 'select',
-                       'status_options': ['Not yet', 'biking', 'driving']} 
-
-        var popup = "<div class='popup_box_header'>{{data.town_name}}<strong></strong></div><hr />"
-        popup += '<select ng-model="data.town_status" ng-options="v for v in data.status_options"></select>'
+        var popup = "<div class='popup_box_header'>{{town.name}}<strong></strong></div><hr />"
+        popup += '<select ng-model="town.status" ng-change=messageClick(town) ng-options="v for v in town.status_options"></select>'
+        popup += '</select>'
 
         divNode.innerHTML = popup
         layer.bindPopup(divNode, {
