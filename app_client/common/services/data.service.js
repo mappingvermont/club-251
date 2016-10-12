@@ -15,8 +15,13 @@
       });
     };
 
+    var setProfile = function() {
+      console.log('SETTING PROFILE')
+    }
+
     return {
-      getProfile : getProfile
+      getProfile : getProfile,
+      setProfile : setProfile
     };
   }
 
