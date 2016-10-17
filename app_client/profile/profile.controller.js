@@ -55,7 +55,15 @@
             console.log(vm.user.towns[layer.feature.properties.fips6])
             console.log('end')
 
-            meanData.setProfile()
+            meanData.setProfile(layer.feature.properties)
+              .success(function(data) {
+                  console.log(data)
+              })
+              .error(function(e) {
+                  console.log(e);
+              });
+
+            console.log('finished')
 
             //takes a while to update the status-- see if we can fix this?
             //layer.feature.properties.status = layer.status
@@ -103,7 +111,7 @@
                 function onEachFeature(feature, layer) {
 
                     var fips6 = layer.feature.properties.fips6
-                    layer.feature.properties.status = userData.towns[fips6]
+                    layer.feature.properties.status = userData.towns['x' + fips6.toString()]
 
                     style_poly(layer)
 

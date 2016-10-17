@@ -12,6 +12,7 @@ var ctrlUsers = require('../controllers/users')
 
 // profile
 router.get('/profile', auth, ctrlProfile.profileRead);
+router.put('/profile/:fips6', auth, ctrlProfile.updateProfile);
 
 // users
 router.get('/users', ctrlUsers.userList)
