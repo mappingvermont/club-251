@@ -2,7 +2,7 @@
 
   angular.module('meanApp', ['ngRoute', 'leaflet-directive']);
 
-  function config ($routeProvider, $locationProvider) {
+  function config ($routeProvider, $locationProvider, $logProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'home/home.view.html',
@@ -33,6 +33,10 @@
 
     // use the HTML5 History API
     $locationProvider.html5Mode(true);
+
+    //turn off leaflet logging
+    $logProvider.debugEnabled(false);
+
   }
 
   function run($rootScope, $location, $http, authentication) {
@@ -45,7 +49,7 @@
   
   angular
     .module('meanApp')
-    .config(['$routeProvider', '$locationProvider', config])
+    .config(['$routeProvider', '$locationProvider', '$logProvider', config])
     .run(['$rootScope', '$location', '$http', 'authentication', run]);
 
 })();

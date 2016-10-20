@@ -30,20 +30,21 @@ module.exports.updateProfile = function(req, res) {
     User
       .findById(req.payload._id, function (err, user) {
 
-        user.towns['x' + req.body.fips6.toString()] = req.body.status;
-        user.name = 'test2'
+        user.towns[req.body.fips6] = req.body.status;
 
+        //biggest gotcha ever
+        //will save outer level objects fine, but need to
+        //explicitly tell mongoose that this has been updated
         user.markModified('towns');
 
         console.log('starting save')
         user.save(function(err, u) {
         if (err) {
             console.log(err);
-            console.log('ERROR')
             res.send(400, 'Bad Request');
         } else {
           res.send(200)
-          console.log(user)
+          //console.log(user)
         }
       });
 
