@@ -44,6 +44,8 @@
 
         meanData.getProfile()
             .success(function(data) {
+                vm.user = data
+                tabulateUserStats($scope)
                 joinTopoJson($scope, $http, data, vm, leafletData)
 
             })
@@ -57,6 +59,8 @@
             style_poly(layer)
 
             vm.user.towns[layer.feature.properties.fips6] = layer.feature.properties.status
+
+            tabulateUserStats($scope)
             //console.log(vm.user.towns[layer.feature.properties.fips6])
 
             meanData.setProfile(layer.feature.properties)
@@ -129,7 +133,7 @@
 
         });
 
-        vm.user = userData
+        //vm.user = userData
 
     }
 
@@ -165,6 +169,28 @@
         layer.bindPopup(divNode)
 
     }
+
+    function tabulateUserStats($scope) {
+
+        var arr = []
+        var towns = $scope.vm.user.towns
+
+        for (var status in towns) {
+            arr.push(towns[status])
+        }
+
+        var groupby = {};
+        arr.map( function (a) { if (a in groupby) groupby[a] ++; else groupby[a] = 1; } );
+        console.log(groupby);
+
+        $scope.vm.user.driven = groupby.Driving
+        $scope.vm.user.hiked = groupby.Hiking
+        $scope.vm.user.biked = groupby.Biking
+        $scope.vm.user.not_yet = groupby['Not yet']
+
+    }
+
+
 
 
 })();
