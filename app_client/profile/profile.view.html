@@ -26,13 +26,11 @@
 <div class="container">
 
       <div class="chart">
-      User stats! Towns biked: {{ vm.user.biked }}, Towns hiked: {{ vm.user.hiked }}, Towns driven: {{ vm.user.driven }}, Towns left: {{vm.user.not_yet}}
+      User stats! Towns biked: {{ vm.user.local.biking }}, Towns hiked: {{ vm.user.local.hiking }}, Towns driven: {{ vm.user.local.driving }}, Towns left: {{vm.user.local.not_yet}}
     </div>
   <div class="row">
     
      <div class="col-md-6">
-
-      <!-- <h1 class="form-signin-heading">Your profile</h1> -->
 
       <form  class="form-horizontal">
         <div class="form-group">

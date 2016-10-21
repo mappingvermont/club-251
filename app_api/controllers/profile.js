@@ -37,6 +37,8 @@ module.exports.updateProfile = function(req, res) {
         //explicitly tell mongoose that this has been updated
         user.markModified('towns');
 
+        tabulateUserStats(user)
+
         console.log('starting save')
         user.save(function(err, u) {
         if (err) {
@@ -50,5 +52,25 @@ module.exports.updateProfile = function(req, res) {
 
   });
   }
+
+      function tabulateUserStats(user) {
+
+        var arr = []
+        var towns = user.towns
+
+        for (var status in towns) {
+            arr.push(towns[status])
+        }
+
+        var groupby = {};
+        arr.map( function (a) { if (a in groupby) groupby[a] ++; else groupby[a] = 1; } );
+        console.log(groupby);
+
+        user.driving = groupby.Driving || 0
+        user.hiking = groupby.Hiking || 0
+        user.biking = groupby.Biking || 0
+        user.not_yet = groupby['Not yet'] || 0
+
+    }
 
 };

@@ -9,7 +9,16 @@ module.exports.userList = function(req, res) {
       .find({}, function(err, users) {
         userList = []
         users.forEach(function(user){
-          userList.push(user.name)
+          u = {name: user.name, 
+               biking: user.biking || 0,
+               hiking: user.hiking || 0,
+               driving: user.driving || 0,
+               not_yet: user.not_yet || 0
+             }
+
+          console.log(u)
+
+          userList.push(u)
         })
       })
       .exec(function(err, users) {

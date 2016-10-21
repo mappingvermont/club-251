@@ -6,12 +6,8 @@
 
   <p>Won't you please <a href="login">sign in</a> or <a href="register">register</a>?</p>
 
-  <!-- <p ng-repeat>{{user for vm.users}} </p> -->
-
   Here are some users: <br>
-  {{ vm.users }}
+  <p ng-repeat="u in vm.users">{{u.name}} has been to {{u.biking}} towns by bike<br></p>
   <br>
-  Hurray for the home page!
-  And here too?
 
 </div>

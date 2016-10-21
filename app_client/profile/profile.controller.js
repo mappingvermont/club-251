@@ -133,8 +133,6 @@
 
         });
 
-        //vm.user = userData
-
     }
 
     var styles = {
@@ -183,10 +181,14 @@
         arr.map( function (a) { if (a in groupby) groupby[a] ++; else groupby[a] = 1; } );
         console.log(groupby);
 
-        $scope.vm.user.driven = groupby.Driving
-        $scope.vm.user.hiked = groupby.Hiking
-        $scope.vm.user.biked = groupby.Biking
-        $scope.vm.user.not_yet = groupby['Not yet']
+        $scope.vm.user.local = {}
+
+        $scope.vm.user.local.driving = groupby.Driving || 0
+        $scope.vm.user.local.hiking = groupby.Hiking || 0
+        $scope.vm.user.local.biking = groupby.Biking || 0
+        $scope.vm.user.local.not_yet = groupby['Not yet'] || 0
+
+        console.log($scope.vm.user.local)
 
     }
 
