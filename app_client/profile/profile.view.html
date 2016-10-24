@@ -18,38 +18,40 @@
     margin-right: 8px;
     opacity: 0.7;
 }
-.chart {
-  background-color: yellow;
-}
+
+#chart div.tooltip {    
+    border-radius: 10px;
+    position: absolute;
+    text-align: center;
+    width: 100px;
+    height: 25px;
+    padding: 8px;
+    margin-top: -20px;
+    font: 10px sans-serif;
+    background: #ddd;
+    pointer-events: none;
+    background-color: white;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
 </style>
 
 <div class="container">
 
-      <div class="chart">
-      User stats! Towns biked: {{ vm.user.local.biking }}, Towns hiked: {{ vm.user.local.hiking }}, Towns driven: {{ vm.user.local.driving }}, Towns left: {{vm.user.local.not_yet}}
-    </div>
+  
   <div class="row">
+
+    
     
      <div class="col-md-6">
-
-      <form  class="form-horizontal">
-        <div class="form-group">
-          <label class="col-sm-3 control-label">Town Stats</label>
-          <p class="form-control-static">{{ vm.user.name }}</p>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label">Email</label>
-          <p class="form-control-static">{{ vm.user.email }}</p>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label">And here's your town data!</label>
-          <p class="form-control-static">DUMMY JSON</p>
-        </div>
-      </form>
-
     </div>
-
   </div>
+  <div id="chart"></div><br>
   <leaflet lf-center=vermont layers="layers" legend="legend" width="100%" height="480px"></leaflet>
  </br>
 </div>

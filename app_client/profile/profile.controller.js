@@ -26,16 +26,18 @@
                         //url: 'http://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}.png',
                         type: 'xyz',
                         attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
-                        layerOptions: {"showOnSelector": false}
+                        layerOptions: {
+                            "showOnSelector": false
+                        }
                     },
                 },
                 overlays: {}
             },
             legend: {
-                    position: 'bottomright',
-                    colors: [ '#ff7f00', '#377eb8', '#e41a1c', '#999999' ],
-                    labels: [ 'Hiking', 'Biking', 'Driving', 'Not yet' ]
-                }
+                position: 'bottomright',
+                colors: ['#ff7f00', '#377eb8', '#e41a1c', '#999999'],
+                labels: ['Hiking', 'Biking', 'Driving', 'Not yet']
+            }
         });
 
         var vm = this;
@@ -61,15 +63,15 @@
             vm.user.towns[layer.feature.properties.fips6] = layer.feature.properties.status
 
             tabulateUserStats($scope)
-            //console.log(vm.user.towns[layer.feature.properties.fips6])
+                //console.log(vm.user.towns[layer.feature.properties.fips6])
 
             meanData.setProfile(layer.feature.properties)
-              .success(function(data) {
-                  //console.log(data)
-              })
-              .error(function(e) {
-                  console.log(e);
-              });
+                .success(function(data) {
+                    //console.log(data)
+                })
+                .error(function(e) {
+                    console.log(e);
+                });
 
             //takes a while to update the status-- see if we can fix this?
             //layer.feature.properties.status = layer.status
@@ -92,6 +94,8 @@
         });
 
     }
+
+
 
 
     function joinTopoJson($scope, $http, userData, vm, leafletData) {
@@ -136,7 +140,7 @@
     }
 
     var styles = {
-        'Hiking': '#ff7f00',            
+        'Hiking': '#ff7f00',
         'Biking': '#377eb8',
         //'Hiking': '#4daf4a', //green
         'Driving': '#e41a1c',
@@ -159,7 +163,7 @@
         var divNode = document.createElement('DIV');
 
         var popup = "<div class='popup_box_header'><strong>{{layer.feature.properties.town}}</strong></div><hr />"
-        popup += 'Status: <select ng-model="layer.feature.properties.status" ng-change=messageClick(layer) ' 
+        popup += 'Status: <select ng-model="layer.feature.properties.status" ng-change=messageClick(layer) '
         popup += 'ng-options="v for v in layer.status_options"></select>'
         popup += '</select>'
 
@@ -178,7 +182,10 @@
         }
 
         var groupby = {};
-        arr.map( function (a) { if (a in groupby) groupby[a] ++; else groupby[a] = 1; } );
+        arr.map(function(a) {
+            if (a in groupby) groupby[a]++;
+            else groupby[a] = 1;
+        });
         console.log(groupby);
 
         $scope.vm.user.local = {}
@@ -190,7 +197,142 @@
 
         console.log($scope.vm.user.local)
 
+        initD3($scope);
+
     }
+
+
+    function initD3($scope) {
+
+        var margins = {
+                top: 12,
+                left: 0,
+                right: 0,
+                bottom: 12
+            },
+
+            width = parseInt(d3.select('#chart').style('width'), 10),
+            width = width = width - margins.left - margins.right,
+            height = 30 - margins.top - margins.bottom,
+            dataset = [{
+                    data: [{
+                        group_name: 'Hiking',
+                        count: $scope.vm.user.local.hiking
+                    }],
+                    name: 'Hiking'
+                }, {
+                    data: [{
+                        group_name: 'Biking',
+                        count: $scope.vm.user.local.biking
+                    }],
+                }, {
+                    data: [{
+                        group_name: 'Driving',
+                        count: $scope.vm.user.local.driving
+                    }],
+                }, {
+                    data: [{
+                        group_name: 'Not yet',
+                        count: $scope.vm.user.local.not_yet
+                    }],
+                }
+
+            ],
+
+            dataset = dataset.map(function(d) {
+                return d.data.map(function(o, i) {
+                    // Structure it so that your numeric
+                    // axis (the stacked amount) is y
+                    return {
+                        y: o.count,
+                        x: o.group_name
+                    };
+                });
+            }),
+            stack = d3.layout.stack();
+
+        stack(dataset);
+
+        var dataset = dataset.map(function(group) {
+                return group.map(function(d) {
+                    // Invert the x and y values, and y0 becomes x0
+                    return {
+                        x: d.y,
+                        y: d.x,
+                        x0: d.y0
+                    };
+                });
+            }),
+            svg = d3.select('#chart')
+            .append('svg')
+            .attr('width', width + margins.left + margins.right)
+            .attr('height', height + margins.top + margins.bottom)
+            .append('g')
+            .attr('transform', 'translate(' + margins.left + ',' + margins.top + ')'),
+            xMax = d3.max(dataset, function(group) {
+                return d3.max(group, function(d) {
+                    return d.x + d.x0;
+                });
+            }),
+            xScale = d3.scale.linear()
+            .domain([0, xMax])
+            .range([0, width]),
+
+            yScale = d3.scale.ordinal()
+            .rangeRoundBands([0, height], .1),
+            groups = svg.selectAll('g')
+            .data(dataset)
+            .enter()
+            .append('svg')
+            .style('fill', function(d, i) {
+              var colors = ['#ff7f00', '#377eb8', '#e41a1c', '#999999']
+              return colors[i];
+            }),
+
+            rects = groups.selectAll('rect')
+            .data(function(d) {
+                return d;
+            })
+            .enter()
+            .append('rect')
+            .attr('x', function(d) {
+                return xScale(d.x0);
+            })
+            .attr('y', function(d, i) {
+                return yScale(d.y);
+            })
+            .attr('height', function(d) {
+                return yScale.rangeBand();
+            })
+            .attr('width', function(d) {
+                return xScale(d.x);
+            })
+            .on('mouseover', mouseover)
+            .on("mousemove", function(d) {
+                mousemove(d)
+            })
+            .on("mouseout", mouseout);
+
+        var div = d3.select("#chart").append("div")
+            .attr("class", "tooltip")
+            .style("display", "none");
+
+        function mouseover() {
+            div.style("display", "inline");
+        }
+
+        function mousemove(d) {
+            div
+                .text(d.y + ': ' + d.x)
+                .style("opacity", 1)
+                .style("left", (d3.event.pageX - 34) + "px")
+                .style("top", (d3.event.pageY - 12) + "px");
+        }
+
+        function mouseout() {
+            div.style("display", "none");
+        }
+    };
 
 
 
