@@ -48,6 +48,8 @@
             .success(function(data) {
                 vm.user = data
                 tabulateUserStats($scope)
+                initD3($scope)
+                updateData($scope)
                 joinTopoJson($scope, $http, data, vm, leafletData)
 
             })
@@ -63,6 +65,8 @@
             vm.user.towns[layer.feature.properties.fips6] = layer.feature.properties.status
 
             tabulateUserStats($scope)
+
+            updateData($scope)
                 //console.log(vm.user.towns[layer.feature.properties.fips6])
 
             meanData.setProfile(layer.feature.properties)
@@ -94,9 +98,6 @@
         });
 
     }
-
-
-
 
     function joinTopoJson($scope, $http, userData, vm, leafletData) {
 
@@ -138,6 +139,30 @@
         });
 
     }
+
+        function mouseover($scope) {
+            var div = d3.select('.tooltip')
+            //console.log(div)
+            console.log('mouseover')
+            div.style("display", "inline");
+        }
+
+        function mousemove($scope, d) {
+            var div = d3.select('.tooltip')
+            console.log('mousemove')
+            div
+                .text('test: ok')
+                // .text(d.y + ': ' + d.x)
+                .style("opacity", 1)
+                .style("left", (d3.event.pageX - 34) + "px")
+                .style("top", (d3.event.pageY - 12) + "px");
+        }
+
+        function mouseout($scope) {
+            console.log('mouseout')
+            var div = d3.select('.tooltip')
+            div.style("display", "none");
+        }
 
     var styles = {
         'Hiking': '#ff7f00',
@@ -197,9 +222,61 @@
 
         console.log($scope.vm.user.local)
 
-        initD3($scope);
-
     }
+
+    function updateData($scope) {
+
+        var colours = ['#ff7f00', '#377eb8', '#e41a1c', '#999999']
+        var input_data = []
+        var xOffset = 0
+
+        //Process the data
+        var value_list = [$scope.vm.user.local.hiking, 
+                          $scope.vm.user.local.biking,
+                          $scope.vm.user.local.driving,
+                          $scope.vm.user.local.not_yet]
+
+        console.log(value_list)
+
+        for(var i = 0; i < value_list.length; i++) {
+            var datum = {
+                value : value_list[i],
+                colour : colours[i],
+                y: 0,
+                x: xOffset
+
+            }
+            xOffset += value_list[i]
+            input_data.push(datum)      
+        }
+
+        var bar = $scope.g.selectAll(".bar")
+            .data(input_data, function(d) { return d.name; });
+
+        // new data:
+        bar.enter().append("rect")
+            .attr("height", 18)
+            .attr("x", function(d) {return d.x})
+            .style("fill", function(d) { return d.colour; })
+            .attr('x', function(d) {
+                console.log(d)
+                return $scope.xScale(d.x);
+            })
+            .attr('y', function(d, i) {
+                return $scope.yScale(d.y);
+            })
+            .attr('width', function(d) {
+                console.log($scope.xScale(d.value))
+                return $scope.xScale(d.value);
+            })
+
+            .on('mouseover', mouseover)
+            .on("mousemove", function(d) {
+                mousemove(d)
+            })
+            .on("mouseout", mouseout);
+
+    };
 
 
     function initD3($scope) {
@@ -208,130 +285,90 @@
                 top: 12,
                 left: 0,
                 right: 0,
-                bottom: 12
+                bottom: 25
             },
+            width = window.innerWidth,
+            width = width - margins.left - margins.right,
+            height = 50 - margins.top - margins.bottom
 
-            width = parseInt(d3.select('#chart').style('width'), 10),
-            width = width = width - margins.left - margins.right,
-            height = 30 - margins.top - margins.bottom,
-            dataset = [{
-                    data: [{
-                        group_name: 'Hiking',
-                        count: $scope.vm.user.local.hiking
-                    }],
-                    name: 'Hiking'
-                }, {
-                    data: [{
-                        group_name: 'Biking',
-                        count: $scope.vm.user.local.biking
-                    }],
-                }, {
-                    data: [{
-                        group_name: 'Driving',
-                        count: $scope.vm.user.local.driving
-                    }],
-                }, {
-                    data: [{
-                        group_name: 'Not yet',
-                        count: $scope.vm.user.local.not_yet
-                    }],
-                }
 
-            ],
+        var svg = d3.select("#chart")
+            .attr('width', width)
+            .attr("height", height)
 
-            dataset = dataset.map(function(d) {
-                return d.data.map(function(o, i) {
-                    // Structure it so that your numeric
-                    // axis (the stacked amount) is y
-                    return {
-                        y: o.count,
-                        x: o.group_name
-                    };
-                });
-            }),
-            stack = d3.layout.stack();
-
-        stack(dataset);
-
-        var dataset = dataset.map(function(group) {
-                return group.map(function(d) {
-                    // Invert the x and y values, and y0 becomes x0
-                    return {
-                        x: d.y,
-                        y: d.x,
-                        x0: d.y0
-                    };
-                });
-            }),
-            svg = d3.select('#chart')
-            .append('svg')
-            .attr('width', width + margins.left + margins.right)
-            .attr('height', height + margins.top + margins.bottom)
-            .append('g')
-            .attr('transform', 'translate(' + margins.left + ',' + margins.top + ')'),
-            xMax = d3.max(dataset, function(group) {
-                return d3.max(group, function(d) {
-                    return d.x + d.x0;
-                });
-            }),
-            xScale = d3.scale.linear()
-            .domain([0, xMax])
+        $scope.xScale = d3.scaleLinear()
+            .domain([0, 251])
             .range([0, width]),
 
-            yScale = d3.scale.ordinal()
-            .rangeRoundBands([0, height], .1),
-            groups = svg.selectAll('g')
-            .data(dataset)
-            .enter()
-            .append('svg')
-            .style('fill', function(d, i) {
-              var colors = ['#ff7f00', '#377eb8', '#e41a1c', '#999999']
-              return colors[i];
-            }),
+        $scope.yScale = d3.scaleBand()
+            .rangeRound([0, height], .1)
 
-            rects = groups.selectAll('rect')
-            .data(function(d) {
-                return d;
-            })
-            .enter()
-            .append('rect')
-            .attr('x', function(d) {
-                return xScale(d.x0);
-            })
-            .attr('y', function(d, i) {
-                return yScale(d.y);
-            })
-            .attr('height', function(d) {
-                return yScale.rangeBand();
-            })
-            .attr('width', function(d) {
-                return xScale(d.x);
-            })
-            .on('mouseover', mouseover)
-            .on("mousemove", function(d) {
-                mousemove(d)
-            })
-            .on("mouseout", mouseout);
+        $scope.g = svg.append("g")
 
-        var div = d3.select("#chart").append("div")
-            .attr("class", "tooltip")
-            .style("display", "none");
+        d3.select("#chart").append("div")
+            .attr("class", "tooltip")   
+            .style("display", "inline");
 
-        function mouseover() {
-            div.style("display", "inline");
-        }
 
-        function mousemove(d) {
-            div
-                .text(d.y + ': ' + d.x)
-                .style("opacity", 1)
-                .style("left", (d3.event.pageX - 34) + "px")
-                .style("top", (d3.event.pageY - 12) + "px");
-        }
 
-        function mouseout() {
-            div.style("display", "none");
-        }
+        //     groups = svg.selectAll('g')
+        //     .attr("id", "bargroups")
+        //     .data(dataset)
+        //     .enter()
+        //     .append('svg')
+        //     .style('fill', function(d, i) {
+        //       var colors = ['#ff7f00', '#377eb8', '#e41a1c', '#999999']
+        //       return colors[i];
+        //     }),
+
+        //     rects = groups.selectAll('rect')
+        //     .data(function(d) {
+        //         return d;
+        //     })
+        //     .enter()
+        //     .append('rect')
+        //     .attr("id", "barrects")
+        //     .attr('x', function(d) {
+        //         console.log('d')
+        //         console.log(d)
+        //         return xScale(d.x0);
+        //     })
+        //     .attr('y', function(d, i) {
+        //         return yScale(d.y);
+        //     })
+        //     .attr('height', function(d) {
+        //         return yScale.rangeBand();
+        //     })
+        //     .attr('width', function(d) {
+        //         return xScale(d.x);
+        //     })
+        //     .on('mouseover', mouseover)
+        //     .on("mousemove", function(d) {
+        //         mousemove(d)
+        //     })
+        //     .on("mouseout", mouseout);
+
+        // $scope.svg = svg
+
+        // var div = d3.select("#chart").append("div")
+        //     .attr("class", "tooltip")
+        //     .style("display", "none");
+
+        // function mouseover() {
+        //     div.style("display", "inline");
+        // }
+
+        // function mousemove(d) {
+        //     div
+        //         .text(d.y + ': ' + d.x)
+        //         .style("opacity", 1)
+        //         .style("left", (d3.event.pageX - 34) + "px")
+        //         .style("top", (d3.event.pageY - 12) + "px");
+        // }
+
+        // function mouseout() {
+        //     div.style("display", "none");
+        // }
     };
 
 
