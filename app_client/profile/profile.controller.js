@@ -309,66 +309,6 @@
             .attr("class", "tooltip")   
             .style("display", "inline");
 
-
-
-        //     groups = svg.selectAll('g')
-        //     .attr("id", "bargroups")
-        //     .data(dataset)
-        //     .enter()
-        //     .append('svg')
-        //     .style('fill', function(d, i) {
-        //       var colors = ['#ff7f00', '#377eb8', '#e41a1c', '#999999']
-        //       return colors[i];
-        //     }),
-
-        //     rects = groups.selectAll('rect')
-        //     .data(function(d) {
-        //         return d;
-        //     })
-        //     .enter()
-        //     .append('rect')
-        //     .attr("id", "barrects")
-        //     .attr('x', function(d) {
-        //         console.log('d')
-        //         console.log(d)
-        //         return xScale(d.x0);
-        //     })
-        //     .attr('y', function(d, i) {
-        //         return yScale(d.y);
-        //     })
-        //     .attr('height', function(d) {
-        //         return yScale.rangeBand();
-        //     })
-        //     .attr('width', function(d) {
-        //         return xScale(d.x);
-        //     })
-        //     .on('mouseover', mouseover)
-        //     .on("mousemove", function(d) {
-        //         mousemove(d)
-        //     })
-        //     .on("mouseout", mouseout);
-
-        // $scope.svg = svg
-
-        // var div = d3.select("#chart").append("div")
-        //     .attr("class", "tooltip")
-        //     .style("display", "none");
-
-        // function mouseover() {
-        //     div.style("display", "inline");
-        // }
-
-        // function mousemove(d) {
-        //     div
-        //         .text(d.y + ': ' + d.x)
-        //         .style("opacity", 1)
-        //         .style("left", (d3.event.pageX - 34) + "px")
-        //         .style("top", (d3.event.pageY - 12) + "px");
-        // }
-
-        // function mouseout() {
-        //     div.style("display", "none");
-        // }
     };
 
 
