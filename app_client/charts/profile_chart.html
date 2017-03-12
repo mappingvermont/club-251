@@ -32,9 +32,7 @@
     </style>
 </head>
 <body>
-    <div class="hidden" id="tooltip">
-        <p><span id="value"></span></p>
-    </div>
+
     <script>
     console.log('here')
     var margins = {
@@ -137,32 +135,24 @@
         .attr('width', function (d) {
         return xScale(d.x);
     })
-        .on('mouseover', mouseover)
-        .on("mousemove", function (d) {
 
-          mousemove(d)
+        .on("mouseover", function() { tooltip.style("display", null); })
+        .on("mouseout", function() { tooltip.style("display", "none"); })
+        .on("mousemove", function(d) {
+            mousemove(d)
+  });
 
-        })
-        .on("mouseout", mouseout);
 
-    var div = d3.select("#chart").append("div")
+    var tooltip = svg.append("div")
     .attr("class", "tooltip")
     .style("display", "none");
 
-    function mouseover() {
-    div.style("display", "inline");
-    }
-
     function mousemove(d) {
     console.log(d)
-    div
+    d3.select(this)
       .text(d.y + ': ' + d.x)
       .style("left", (d3.event.pageX - 34) + "px")
       .style("top", (d3.event.pageY - 12) + "px");
-    }
-
-    function mouseout() {
-    div.style("display", "none");
     }
 
     </script>

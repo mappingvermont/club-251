@@ -13,7 +13,8 @@ module.exports.userList = function(req, res) {
                biking: user.biking || 0,
                hiking: user.hiking || 0,
                driving: user.driving || 0,
-               not_yet: user.not_yet || 0
+               not_yet: user.not_yet || 0,
+               total: user.biking + user.hiking + user.driving || 0
              }
 
           console.log(u)

@@ -1,13 +1,18 @@
 <navigation></navigation>
 
 <div class="container">
+    <div class="hidden" id="tooltip">
+        <p><span id="value"></span></p>
+    </div>
   
-  <h1>Hello there</h1>
+  <h1>Welcome to Club 251!</h1>
 
   <p>Won't you please <a href="login">sign in</a> or <a href="register">register</a>?</p>
 
-  Here are some users: <br>
-  <p ng-repeat="u in vm.users">{{u.name}} has been to {{u.biking}} towns by bike<br></p>
+  Or, check out the progress of our registered users: <br>
+  <div ng-repeat="u in vm.users | orderBy:'total':true"><br>
+    <leaderboard data='u'></leaderboard>
+  </div>
   <br>
 
 </div>

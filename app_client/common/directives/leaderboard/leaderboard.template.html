@@ -1,0 +1,19 @@
+<style>
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+#chart {
+    width: 100%;
+}
+</style>
+
+<div class="leaderboard">
+<a ng-href="/users/{{data.name}}">{{data.name}}</a> has been to {{data.total}} towns!
+<svg id="chart"></svg>
+</div>

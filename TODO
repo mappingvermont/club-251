@@ -18,3 +18,11 @@ and also tell them about other people's maps
 make a map view/thing -- maybe {}/profile/map?
 test out binding JSON to topojson
 figure out how to edit and then PUT
+
+---
+
+add tooltips to charts (why is this so hard?)
+add not-editable map
+figure out why it takes so long to load
+faster way to join JSON?
+if signed in, hide "Won't you please sign in or register?" and show "Edit your map here"

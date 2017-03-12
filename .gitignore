@@ -31,3 +31,5 @@ node_modules
 
 public/lib
 
+app_client/app.min.js
+app_client/app.min.js.map
