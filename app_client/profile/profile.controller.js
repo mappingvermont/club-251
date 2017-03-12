@@ -43,13 +43,13 @@
         var vm = this;
 
         vm.user = {};
+        $scope.dataHasLoaded = false
 
         meanData.getProfile()
             .success(function(data) {
                 vm.user = data
                 tabulateUserStats($scope)
-                initD3($scope)
-                updateData($scope)
+                $scope.dataHasLoaded = true
                 joinTopoJson($scope, $http, data, vm, leafletData)
 
             })
@@ -65,9 +65,6 @@
             vm.user.towns[layer.feature.properties.fips6] = layer.feature.properties.status
 
             tabulateUserStats($scope)
-
-            updateData($scope)
-                //console.log(vm.user.towns[layer.feature.properties.fips6])
 
             meanData.setProfile(layer.feature.properties)
                 .success(function(data) {
@@ -140,34 +137,9 @@
 
     }
 
-        function mouseover($scope) {
-            var div = d3.select('.tooltip')
-            //console.log(div)
-            console.log('mouseover')
-            div.style("display", "inline");
-        }
-
-        function mousemove($scope, d) {
-            var div = d3.select('.tooltip')
-            console.log('mousemove')
-            div
-                .text('test: ok')
-                // .text(d.y + ': ' + d.x)
-                .style("opacity", 1)
-                .style("left", (d3.event.pageX - 34) + "px")
-                .style("top", (d3.event.pageY - 12) + "px");
-        }
-
-        function mouseout($scope) {
-            console.log('mouseout')
-            var div = d3.select('.tooltip')
-            div.style("display", "none");
-        }
-
     var styles = {
         'Hiking': '#ff7f00',
         'Biking': '#377eb8',
-        //'Hiking': '#4daf4a', //green
         'Driving': '#e41a1c',
         'Not yet': '#999999'
     }
@@ -212,7 +184,6 @@
             else groupby[a] = 1;
         });
         console.log(groupby);
-
         $scope.vm.user.local = {}
 
         $scope.vm.user.local.driving = groupby.Driving || 0
@@ -223,95 +194,5 @@
         console.log($scope.vm.user.local)
 
     }
-
-    function updateData($scope) {
-
-        var colours = ['#ff7f00', '#377eb8', '#e41a1c', '#999999']
-        var input_data = []
-        var xOffset = 0
-
-        //Process the data
-        var value_list = [$scope.vm.user.local.hiking, 
-                          $scope.vm.user.local.biking,
-                          $scope.vm.user.local.driving,
-                          $scope.vm.user.local.not_yet]
-
-        console.log(value_list)
-
-        for(var i = 0; i < value_list.length; i++) {
-            var datum = {
-                value : value_list[i],
-                colour : colours[i],
-                y: 0,
-                x: xOffset
-
-            }
-            xOffset += value_list[i]
-            input_data.push(datum)      
-        }
-
-        var bar = $scope.g.selectAll(".bar")
-            .data(input_data, function(d) { return d.name; });
-
-        // new data:
-        bar.enter().append("rect")
-            .attr("height", 18)
-            .attr("x", function(d) {return d.x})
-            .style("fill", function(d) { return d.colour; })
-            .attr('x', function(d) {
-                console.log(d)
-                return $scope.xScale(d.x);
-            })
-            .attr('y', function(d, i) {
-                return $scope.yScale(d.y);
-            })
-            .attr('width', function(d) {
-                console.log($scope.xScale(d.value))
-                return $scope.xScale(d.value);
-            })
-
-            .on('mouseover', mouseover)
-            .on("mousemove", function(d) {
-                mousemove(d)
-            })
-            .on("mouseout", mouseout);
-
-    };
-
-
-    function initD3($scope) {
-
-        var margins = {
-                top: 12,
-                left: 0,
-                right: 0,
-                bottom: 25
-            },
-            width = window.innerWidth,
-            width = width - margins.left - margins.right,
-            height = 50 - margins.top - margins.bottom
-
-
-        var svg = d3.select("#chart")
-            .attr('width', width)
-            .attr("height", height)
-
-        $scope.xScale = d3.scaleLinear()
-            .domain([0, 251])
-            .range([0, width]),
-
-        $scope.yScale = d3.scaleBand()
-            .rangeRound([0, height], .1)
-
-        $scope.g = svg.append("g")
-
-        d3.select("#chart").append("div")
-            .attr("class", "tooltip")   
-            .style("display", "inline");
-
-    };
-
-
-
 
 })();

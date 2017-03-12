@@ -14,14 +14,31 @@
       templateUrl: '/common/directives/leaderboard/leaderboard.template.html',
        link: function(scope, iElement, iAttrs) {
 
-          initD3(scope, iElement);
+        var tip = d3.tip()
+              .attr('class', 'd3-tip')
+              // .offset([-10, -60])
+              .html(function(d) {
+            return "Loading . . .";
+          })
+
+        initD3(scope, iElement, tip);
+        // updateData(scope, iElement, tip)
+
+        scope.$watch('data', function(newValue, oldValue) {
+                if (newValue) {
+                    updateData(scope, iElement, tip)
+                    console.log("I see a data change!")};
+            }, true);
 
     }
 
     };
   }
 
-  function initD3($scope, iElement) {
+  function initD3($scope, iElement, tip) {
+
+        console.log('initD3')
+        console.log($scope)
 
         var margins = {
                 top: 12,
@@ -38,13 +55,10 @@
             .attr('width', width)
             .attr("height", height)
 
-        var tip = d3.tip()
-              .attr('class', 'd3-tip')
-              // .offset([-10, -60])
-              .html(function(d) {
+        tip.html(function(d) {
             return d.transit_type + ": " + d.value;
           })
-
+              
         svg.call(tip);
 
         $scope.xScale = d3.scaleLinear()
@@ -60,6 +74,10 @@
             .attr("class", "tooltip")   
             // .style("display", "inline");
             .style("display", "none");
+
+};
+
+function updateData($scope, iElement, tip) {
 
         var colours = ['#ff7f00', '#377eb8', '#e41a1c', '#999999']
         var input_data = []

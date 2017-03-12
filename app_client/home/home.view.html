@@ -11,6 +11,7 @@
 
   Or, check out the progress of our registered users: <br>
   <div ng-repeat="u in vm.users | orderBy:'total':true"><br>
+    <a ng-href="/users/{{u.name}}">{{u.name}}</a> has been to {{u.total}} towns!
     <leaderboard data='u'></leaderboard>
   </div>
   <br>
