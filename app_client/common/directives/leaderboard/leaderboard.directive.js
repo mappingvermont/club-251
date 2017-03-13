@@ -56,6 +56,8 @@
             .attr('width', width)
             .attr("height", height)
 
+        svg.append('circle').attr('id', 'tipfollowscursor-' + $scope.data.name)
+
         tip.html(function(d) {
             return d.transit_type + ": " + d.value;
           })
@@ -70,11 +72,6 @@
             .rangeRound([0, height], .1)
 
         $scope.g = svg.append("g")
-
-        var tooltip = d3.select(iElement[0]).select("#chart").append("div")
-            .attr("class", "tooltip")   
-            // .style("display", "inline");
-            .style("display", "none");
 
 };
 
@@ -98,7 +95,8 @@ function updateData($scope, tip) {
                 colour : colours[i],
                 transit_type: type_list[i],
                 y: 0,
-                x: xOffset
+                x: xOffset,
+                user: $scope.data.name
 
             }
             xOffset += value_list[i]
@@ -125,7 +123,16 @@ function updateData($scope, tip) {
             .attr('width', function(d) {
                 return $scope.xScale(d.value);
             })
-            .on('mouseover', tip.show)
+
+            // source: https://github.com/Caged/d3-tip/issues/53
+            .on('mouseover', function (d) {
+            var target = d3.select('#tipfollowscursor-' + d.user)
+                .attr('cx', d3.event.offsetX)
+                .attr('cy', d3.event.offsetY - 5) // 5 pixels above the cursor
+                .node();
+            tip.show(d, target);
+             })
+
             .on('mouseout', tip.hide)
 
     };
