@@ -26,8 +26,9 @@
 
         scope.$watch('data', function(newValue, oldValue) {
                 if (newValue) {
-                    updateData(scope, iElement, tip)
-                    console.log("I see a data change!")};
+                    updateData(scope, tip)
+                    // console.log("I see a data change!")
+                  };
             }, true);
 
     }
@@ -37,8 +38,8 @@
 
   function initD3($scope, iElement, tip) {
 
-        console.log('initD3')
-        console.log($scope)
+        // console.log('initD3')
+        // console.log($scope)
 
         var margins = {
                 top: 12,
@@ -77,7 +78,7 @@
 
 };
 
-function updateData($scope, iElement, tip) {
+function updateData($scope, tip) {
 
         var colours = ['#ff7f00', '#377eb8', '#e41a1c', '#999999']
         var input_data = []

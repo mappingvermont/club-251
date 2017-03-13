@@ -5,9 +5,9 @@
         .controller('profileCtrl', profileCtrl);
 
 
-    profileCtrl.$inject = ['$location', '$scope', '$compile', '$http', 'leafletData', 'meanData'];
+    profileCtrl.$inject = ['$scope', '$compile', '$http', 'leafletData', 'meanData'];
 
-    function profileCtrl($location, $scope, $compile, $http, leafletData, meanData) {
+    function profileCtrl($scope, $compile, $http, leafletData, meanData) {
 
         angular.extend($scope, {
             vermont: {
@@ -67,12 +67,12 @@
             tabulateUserStats($scope)
 
             meanData.setProfile(layer.feature.properties)
-                .success(function(data) {
-                    //console.log(data)
-                })
-                .error(function(e) {
-                    console.log(e);
-                });
+                // .success(function(data) {
+                //     //console.log(data)
+                // })
+                // .error(function(e) {
+                //     console.log(e);
+                // });
 
             //takes a while to update the status-- see if we can fix this?
             //layer.feature.properties.status = layer.status

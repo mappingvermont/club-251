@@ -1,15 +1,13 @@
 <navigation></navigation>
 
 <div class="container">
-    <div class="hidden" id="tooltip">
-        <p><span id="value"></span></p>
-    </div>
   
   <h1>Welcome to Club 251!</h1>
 
-  <p>Won't you please <a href="login">sign in</a> or <a href="register">register</a>?</p>
+  <p ng-hide="vm.isLoggedIn">Won't you please <a href="login">sign in</a> or <a href="register">register</a>?</p>
+  <p ng-show="vm.isLoggedIn">Edit your map <a href="profile">here</a>.<br></p>
 
-  Or, check out the progress of our registered users: <br>
+  Or, check out our leaderboard: <br>
   <div ng-repeat="u in vm.users | orderBy:'total':true"><br>
     <a ng-href="/users/{{u.name}}">{{u.name}}</a> has been to {{u.total}} towns!
     <leaderboard data='u'></leaderboard>

@@ -9,13 +9,13 @@
   function meanUsers ($http, authentication) {
 
     var getUsers = function () {
-      console.log('calling find all users')
+      // console.log('calling find all users')
       return $http.get('/api/users', {
       });
     };
 
     var singleUser = function (username) {
-      console.log('calling singleUser for: ' + username)
+      //console.log('calling singleUser for: ' + username)
       return $http.get('/api/users/' + username, {
       });
     };

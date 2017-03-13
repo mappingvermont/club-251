@@ -4,12 +4,13 @@
     .module('meanApp')
     .controller('homeCtrl', homeCtrl);
 
-  homeCtrl.$inject = ['$location', 'meanUsers'];
-  function homeCtrl($location, meanUsers) {
+  homeCtrl.$inject = ['meanUsers', 'authentication'];
+  function homeCtrl(meanUsers, authentication) {
   	console.log('Home controller is running');
   	console.log('And here');
 
     var vm = this;
+    vm.isLoggedIn = authentication.isLoggedIn();
     vm.users = []
 
     meanUsers.getUsers()

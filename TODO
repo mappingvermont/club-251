@@ -1,28 +1,12 @@
 TODO
-
-index
-welcome people to the app
-link to pages for each user
-also sign up for your own page
-
-
-user pages
-map
-if logged in, let them edit their own
-
-
-if logged in, default page shouldn't ask them to register
-should instead allow them to edit their map
-and also tell them about other people's maps
-
-make a map view/thing -- maybe {}/profile/map?
-test out binding JSON to topojson
-figure out how to edit and then PUT
-
 ---
 
-add tooltips to charts (why is this so hard?)
-add not-editable map
 figure out why it takes so long to load
-faster way to join JSON?
-if signed in, hide "Won't you please sign in or register?" and show "Edit your map here"
+faster way to join JSON -- make it an array instead of an object? number the towns 0 - 250?
+
+topojson vs geojson?
+
+make better leaflet popups
+include a spinning div (or something) as we wait for the map to load?
+
+create map directives?
