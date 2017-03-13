@@ -6,8 +6,7 @@
 
   homeCtrl.$inject = ['meanUsers', 'authentication'];
   function homeCtrl(meanUsers, authentication) {
-  	console.log('Home controller is running');
-  	console.log('And here');
+  	// console.log('Home controller is running');
 
     var vm = this;
     vm.isLoggedIn = authentication.isLoggedIn();
@@ -17,7 +16,7 @@
       .success(function(data) {
         vm.users = data;
 
-        console.log(vm.users);
+        // console.log(vm.users);
 
       })
       .error(function (e) {

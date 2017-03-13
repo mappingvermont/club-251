@@ -16,8 +16,8 @@
     };
 
     var setProfile = function (input) {
-      console.log('in set prof')
-      console.log(authentication.getToken())
+      // console.log('in set prof')
+      // console.log(authentication.getToken())
       return $http.put('/api/profile/' + input.fips6, input, {
         headers: {
           Authorization: 'Bearer '+ authentication.getToken(),

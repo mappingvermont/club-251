@@ -65,17 +65,9 @@
             vm.user.towns[layer.feature.properties.fips6] = layer.feature.properties.status
 
             tabulateUserStats($scope)
-
-            meanData.setProfile(layer.feature.properties)
-                // .success(function(data) {
-                //     //console.log(data)
-                // })
-                // .error(function(e) {
-                //     console.log(e);
-                // });
-
+            
             //takes a while to update the status-- see if we can fix this?
-            //layer.feature.properties.status = layer.status
+            meanData.setProfile(layer.feature.properties)
 
         };
 
@@ -183,7 +175,7 @@
             if (a in groupby) groupby[a]++;
             else groupby[a] = 1;
         });
-        console.log(groupby);
+        // console.log(groupby);
         $scope.vm.user.local = {}
 
         $scope.vm.user.local.driving = groupby.Driving || 0
@@ -191,7 +183,7 @@
         $scope.vm.user.local.biking = groupby.Biking || 0
         $scope.vm.user.local.not_yet = groupby['Not yet'] || 0
 
-        console.log($scope.vm.user.local)
+        // console.log($scope.vm.user.local)
 
     }
 
