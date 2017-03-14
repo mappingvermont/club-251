@@ -44,9 +44,11 @@
 
         vm.user = {};
         $scope.dataHasLoaded = false
+        // console.log('starting mean data')
 
         meanData.getProfile()
             .success(function(data) {
+                // console.log('got mean data')
                 vm.user = data
                 tabulateUserStats($scope)
                 $scope.dataHasLoaded = true
@@ -69,6 +71,10 @@
             //takes a while to update the status-- see if we can fix this?
             meanData.setProfile(layer.feature.properties)
 
+            leafletData.getMap().then(function(map) {
+                     map.closePopup();
+                });
+
         };
 
         $scope.$on('leafletDirectiveMap.popupopen', function(event, leafletEvent) {
@@ -90,9 +96,13 @@
 
     function joinTopoJson($scope, $http, userData, vm, leafletData) {
 
+        // console.log('starting join topojson')
+
         leafletData.getMap().then(function(map) {
 
             $http.get("../data/towns.geojson").success(function(data, status) {
+
+                // console.log('got geojson in joinTopoJSON')
 
                 angular.extend($scope.layers.overlays, {
                     countries: {
@@ -108,6 +118,8 @@
                 });
 
                 function onEachFeature(feature, layer) {
+
+                    //console.log('starting on each feature')
 
                     var fips6 = layer.feature.properties.fips6
                     layer.feature.properties.status = userData.towns[fips6]
@@ -138,20 +150,21 @@
 
     function style_poly(layer) {
 
-        var style_color = (styles[layer.feature.properties.status] || styles['other']);
+        var style_color = styles[layer.feature.properties.status];
 
         layer.setStyle({
             color: style_color,
             fill: style_color,
             weight: 1,
         })
+
     }
 
     function buildPopup(feature, layer) {
 
         var divNode = document.createElement('DIV');
 
-        var popup = "<div class='popup_box_header'><strong>{{layer.feature.properties.town}}</strong></div><hr />"
+        var popup = "<strong>{{layer.feature.properties.town}}</strong><hr />"
         popup += 'Status: <select ng-model="layer.feature.properties.status" ng-change=messageClick(layer) '
         popup += 'ng-options="v for v in layer.status_options"></select>'
         popup += '</select>'
@@ -162,6 +175,8 @@
     }
 
     function tabulateUserStats($scope) {
+
+        // console.log('starting tabulate stats')
 
         var arr = []
         var towns = $scope.vm.user.towns
@@ -182,6 +197,8 @@
         $scope.vm.user.local.hiking = groupby.Hiking || 0
         $scope.vm.user.local.biking = groupby.Biking || 0
         $scope.vm.user.local.not_yet = groupby['Not yet'] || 0
+
+        // console.log('done with stats')
 
         // console.log($scope.vm.user.local)
 
