@@ -9,134 +9,74 @@
 
     function profileCtrl($scope, $compile, $http, leafletData, meanData) {
 
-        angular.extend($scope, {
-            vermont: {
-                lat: 43.9,
-                lng: -72.4,
-                zoom: 8
-            },
-            defaults: {
-                scrollWheelZoom: false
-            },
-            layers: {
-                baselayers: {
-                    osm: {
-                        name: 'Esri World_Topo_Map',
-                        url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-                        //url: 'http://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}.png',
-                        type: 'xyz',
-                        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
-                        layerOptions: {
-                            "showOnSelector": false
-                        }
-                    },
-                },
-                overlays: {}
-            },
-            legend: {
-                position: 'bottomright',
-                colors: ['#ff7f00', '#377eb8', '#e41a1c', '#999999'],
-                labels: ['Hiking', 'Biking', 'Driving', 'Not yet']
-            }
-        });
-
         var vm = this;
 
         vm.user = {};
         $scope.dataHasLoaded = false
-        // console.log('starting mean data')
 
         meanData.getProfile()
             .success(function(data) {
-                // console.log('got mean data')
+
                 vm.user = data
                 tabulateUserStats($scope)
                 $scope.dataHasLoaded = true
-                joinTopoJson($scope, $http, data, vm, leafletData)
+                leafletInit($scope)
+
 
             })
             .error(function(e) {
                 console.log(e);
             });
 
-        $scope.messageClick = function(layer) {
-            //console.log('option ' + layer.feature.properties.status + ' selected for ' + layer.feature.properties.fips6 + '!');
+        }
 
-            style_poly(layer)
+    function leafletInit($scope) {
 
-            vm.user.towns[layer.feature.properties.fips6] = layer.feature.properties.status
+        console.log('in leafletInit')
 
-            tabulateUserStats($scope)
-            
-            //takes a while to update the status-- see if we can fix this?
-            meanData.setProfile(layer.feature.properties)
+        var mymap = L.map('mapid').setView([43.9, -72.4], 8);
 
-            leafletData.getMap().then(function(map) {
-                     map.closePopup();
-                });
+        L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy;',
+        }).addTo(mymap);
 
-        };
+        L.marker([43.9, -72.4]).addTo(mymap).bindPopup("<b>Hello world!</b><br />I am a popup.")
 
-        $scope.$on('leafletDirectiveMap.popupopen', function(event, leafletEvent) {
+          var customLayer = L.geoJson(null, {
+            style: function(feature) {
+              var status = $scope.vm.user.towns[feature.properties.fips6]
+              var style_color = (styles[status] || styles['other']);
 
-            // Create the popup view when is opened
-            var feature = leafletEvent.leafletEvent.popup.options.feature;
+                return { color: style_color,
+                         fill: style_color,
+                         weight: 1 };
+            }
+          });
 
-            var newScope = $scope.$new();
-            newScope.stream = feature;
+          var worldLayer = omnivore.topojson("../data/towns.json", null, customLayer)
+                .on('ready', function(layer) {
 
-            newScope.layer = $scope.layer
-            newScope.layer.status_options = ['Not yet', 'Biking', 'Hiking', 'Driving']
+                    console.log('in world layer')
 
-            $compile(leafletEvent.leafletEvent.popup._contentNode)(newScope);
+                  this.eachLayer(function(marker) {
+                     var status = $scope.vm.user.towns[marker.feature.properties.fips6]
+                     var town = marker.feature.properties.town
 
-        });
+                     // Bind a popup to each icon based on the same properties
+                     marker.bindPopup(buildPopup(town, status))
 
-    }
+                       });
 
-    function joinTopoJson($scope, $http, userData, vm, leafletData) {
+                   })
+                .addTo(mymap);
 
-        // console.log('starting join topojson')
-
-        leafletData.getMap().then(function(map) {
-
-            $http.get("../data/towns.geojson").success(function(data, status) {
-
-                // console.log('got geojson in joinTopoJSON')
-
-                angular.extend($scope.layers.overlays, {
-                    countries: {
-                        name: 'Club 251 Progress',
-                        type: 'geoJSONShape',
-                        data: data,
-                        visible: true,
-                        layerOptions: {
-                            onEachFeature: onEachFeature
-                        }
-
-                    }
-                });
-
-                function onEachFeature(feature, layer) {
-
-                    //console.log('starting on each feature')
-
-                    var fips6 = layer.feature.properties.fips6
-                    layer.feature.properties.status = userData.towns[fips6]
-
-                    style_poly(layer)
-
-                    buildPopup(feature, layer)
-
-                    layer.on({
-                        click: function() {
-                            $scope.layer = layer;
-                        }
-                    })
-                }
-            });
-
-
+        mymap.on('popupclose', function(e) {
+            console.log('well . . .')
+            var marker = e.popup._source;
+            console.log(e)
+            e.popup._source.options.color = '#48f442'
+            e.popup._source.options.fill = '#48f442'
+            console.log('set style?')
         });
 
     }
@@ -146,32 +86,6 @@
         'Biking': '#377eb8',
         'Driving': '#e41a1c',
         'Not yet': '#999999'
-    }
-
-    function style_poly(layer) {
-
-        var style_color = styles[layer.feature.properties.status];
-
-        layer.setStyle({
-            color: style_color,
-            fill: style_color,
-            weight: 1,
-        })
-
-    }
-
-    function buildPopup(feature, layer) {
-
-        var divNode = document.createElement('DIV');
-
-        var popup = "<strong>{{layer.feature.properties.town}}</strong><hr />"
-        popup += 'Status: <select ng-model="layer.feature.properties.status" ng-change=messageClick(layer) '
-        popup += 'ng-options="v for v in layer.status_options"></select>'
-        popup += '</select>'
-
-        divNode.innerHTML = popup
-        layer.bindPopup(divNode)
-
     }
 
     function tabulateUserStats($scope) {
@@ -201,7 +115,42 @@
         // console.log('done with stats')
 
         // console.log($scope.vm.user.local)
+    }
+
+    function buildPopup(town, status) {
+
+        var popup = "<strong>" + town + "</strong><hr />"
+        popup += '<select name=' + town + ' id="townStatus", onchange="messageClick(this);">'
+
+        var choices = ['Driving', 'Hiking', 'Biking', 'Not yet']
+
+        for (var i = 0; i < choices.length; i++) {
+
+            if (status == choices[i]) {
+                popup += '<option selected value="' + choices[i] + '">' + choices[i] + '</option>'
+            } else {
+                popup += '<option value="' + choices[i] + '">' + choices[i] + '</option>'
+                }
+        }
+    
+        popup += '</select>'
+
+        return popup
 
     }
 
+
+
 })();
+
+function messageClick(townStatus) {
+    console.log(townStatus)
+    var selectedText = townStatus.options[townStatus.selectedIndex].innerHTML;
+    var status = townStatus.value;
+
+    var town = townStatus.name
+    console.log(town, status)
+
+
+
+}
