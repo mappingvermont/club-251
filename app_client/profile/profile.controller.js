@@ -55,15 +55,20 @@
         var mymap = L.map('mapid').setView([43.9, -72.4], 8);
 
         L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy;',
         }).addTo(mymap);
+
+        mymap.attributionControl.addAttribution('Basemap &copy; esri; town boundaries from VCGI');
 
           var customLayer = L.geoJson(null, {
             style: $scope.style
           });
 
+          addLegend(mymap)
+
           $scope.worldLayer = omnivore.topojson("../data/towns.json", null, customLayer)
                 .on('ready', function(layer) {
+
+                  //
 
                   this.eachLayer(function(marker) {
                      var status = $scope.vm.user.towns[marker.feature.properties.fips6]
@@ -99,6 +104,28 @@
         'Biking': '#377eb8',
         'Driving': '#e41a1c',
         'Not yet': '#999999'
+    }
+
+    function addLegend(map) {
+
+        var legend = L.control({position: 'bottomright'});
+
+        legend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend')
+            var names =  ['Hiking', 'Biking', 'Driving', 'Not yet']
+
+            var labels = []
+
+            for (var i = 0; i < names.length; i++) {
+                labels.push('<i style="background:' + styles[names[i]] + '"></i> ' + names[i]);
+            }
+
+            div.innerHTML = labels.join('<br>');
+            return div;
+        };
+
+        legend.addTo(map);
     }
 
     function tabulateUserStats($scope) {

@@ -1,12 +1,9 @@
 TODO
 ---
 
-change "full name" to username and prevent any spaces/etc
-
+make map directive and add edit=false (or something) to differentiate
 remove angular leaflet directive from users.view.html
 
-add legend + move copyright to the left
-fix copyright- add esri for basemap
-
+change "full name" to username and prevent any spaces/etc
 handle 400 responses with registration
 can't have the same username, all fields must be filled in, etc
