@@ -16,13 +16,11 @@
 
         var tip = d3.tip()
               .attr('class', 'd3-tip')
-              // .offset([-10, -60])
               .html(function(d) {
             return "Loading . . .";
           })
 
         initD3(scope, iElement, tip);
-        // updateData(scope, iElement, tip)
 
         scope.$watch('data', function(newValue, oldValue) {
                 if (newValue) {
@@ -37,9 +35,6 @@
   }
 
   function initD3($scope, iElement, tip) {
-
-        // console.log('initD3')
-        // console.log($scope)
 
         var margins = {
                 top: 12,

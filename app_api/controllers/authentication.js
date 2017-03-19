@@ -22,6 +22,8 @@ module.exports.register = function(req, res) {
   user.email = req.body.email;
   user.towns = req.body.towns;
 
+  user.not_yet = 251
+
   user.setPassword(req.body.password);
 
   user.save(function(err) {

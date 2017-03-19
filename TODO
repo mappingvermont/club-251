@@ -1,12 +1,12 @@
 TODO
 ---
 
-figure out why it takes so long to load
-faster way to join JSON -- make it an array instead of an object? number the towns 0 - 250?
+change "full name" to username and prevent any spaces/etc
 
-topojson vs geojson?
+remove angular leaflet directive from users.view.html
 
-make better leaflet popups
-include a spinning div (or something) as we wait for the map to load?
+add legend + move copyright to the left
+fix copyright- add esri for basemap
 
-create map directives?
+handle 400 responses with registration
+can't have the same username, all fields must be filled in, etc

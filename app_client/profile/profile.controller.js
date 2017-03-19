@@ -4,10 +4,9 @@
         .module('meanApp')
         .controller('profileCtrl', profileCtrl);
 
+    profileCtrl.$inject = ['$scope', '$compile', '$http', 'meanData'];
 
-    profileCtrl.$inject = ['$scope', '$compile', '$http', 'leafletData', 'meanData'];
-
-    function profileCtrl($scope, $compile, $http, leafletData, meanData) {
+    function profileCtrl($scope, $compile, $http, meanData) {
 
         var vm = this;
 
@@ -20,7 +19,7 @@
                 vm.user = data
                 tabulateUserStats($scope)
                 $scope.dataHasLoaded = true
-                leafletInit($scope)
+                leafletInit($scope, $compile)
 
 
             })
@@ -28,22 +27,23 @@
                 console.log(e);
             });
 
-        }
+        $scope.messageClick = function() {
 
-    function leafletInit($scope) {
+            $scope.vm.user.towns[$scope.popup.fips6] = $scope.popup.status
+            $scope.worldLayer.setStyle($scope.style);
 
-        console.log('in leafletInit')
+            tabulateUserStats($scope)
 
-        var mymap = L.map('mapid').setView([43.9, -72.4], 8);
+            meanData.setProfile($scope.popup)
 
-        L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy;',
-        }).addTo(mymap);
+        };
+ 
+    }
 
-        L.marker([43.9, -72.4]).addTo(mymap).bindPopup("<b>Hello world!</b><br />I am a popup.")
+    function leafletInit($scope, $compile) {
 
-          var customLayer = L.geoJson(null, {
-            style: function(feature) {
+        $scope.style = function(feature) {
+
               var status = $scope.vm.user.towns[feature.properties.fips6]
               var style_color = (styles[status] || styles['other']);
 
@@ -51,16 +51,25 @@
                          fill: style_color,
                          weight: 1 };
             }
+
+        var mymap = L.map('mapid').setView([43.9, -72.4], 8);
+
+        L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy;',
+        }).addTo(mymap);
+
+          var customLayer = L.geoJson(null, {
+            style: $scope.style
           });
 
-          var worldLayer = omnivore.topojson("../data/towns.json", null, customLayer)
+          $scope.worldLayer = omnivore.topojson("../data/towns.json", null, customLayer)
                 .on('ready', function(layer) {
-
-                    console.log('in world layer')
 
                   this.eachLayer(function(marker) {
                      var status = $scope.vm.user.towns[marker.feature.properties.fips6]
                      var town = marker.feature.properties.town
+
+                     marker.feature.properties.status = status
 
                      // Bind a popup to each icon based on the same properties
                      marker.bindPopup(buildPopup(town, status))
@@ -68,16 +77,20 @@
                        });
 
                    })
+
                 .addTo(mymap);
 
-        mymap.on('popupclose', function(e) {
-            console.log('well . . .')
-            var marker = e.popup._source;
-            console.log(e)
-            e.popup._source.options.color = '#48f442'
-            e.popup._source.options.fill = '#48f442'
-            console.log('set style?')
-        });
+        mymap.on('popupopen', function(e) {
+
+            $scope.popup = {}
+            $scope.popup.status_options = ['Not yet', 'Biking', 'Hiking', 'Driving']
+            $scope.popup.status = e.popup._source.feature.properties.status
+            $scope.popup.town = e.popup._source.feature.properties.town
+            $scope.popup.fips6 = e.popup._source.feature.properties.fips6  
+
+            $compile(e.popup._contentNode)($scope);
+
+        })
 
     }
 
@@ -89,8 +102,6 @@
     }
 
     function tabulateUserStats($scope) {
-
-        // console.log('starting tabulate stats')
 
         var arr = []
         var towns = $scope.vm.user.towns
@@ -104,7 +115,7 @@
             if (a in groupby) groupby[a]++;
             else groupby[a] = 1;
         });
-        // console.log(groupby);
+
         $scope.vm.user.local = {}
 
         $scope.vm.user.local.driving = groupby.Driving || 0
@@ -112,45 +123,21 @@
         $scope.vm.user.local.biking = groupby.Biking || 0
         $scope.vm.user.local.not_yet = groupby['Not yet'] || 0
 
-        // console.log('done with stats')
-
-        // console.log($scope.vm.user.local)
     }
 
-    function buildPopup(town, status) {
+    function buildPopup(feature, layer) {
 
-        var popup = "<strong>" + town + "</strong><hr />"
-        popup += '<select name=' + town + ' id="townStatus", onchange="messageClick(this);">'
+        var divNode = document.createElement('DIV');
 
-        var choices = ['Driving', 'Hiking', 'Biking', 'Not yet']
-
-        for (var i = 0; i < choices.length; i++) {
-
-            if (status == choices[i]) {
-                popup += '<option selected value="' + choices[i] + '">' + choices[i] + '</option>'
-            } else {
-                popup += '<option value="' + choices[i] + '">' + choices[i] + '</option>'
-                }
-        }
-    
+        var popup = "<strong>{{popup.town}}</strong><hr />"
+        popup += 'Status: <select ng-model="popup.status" ng-change=messageClick() '
+        popup += 'ng-options="v for v in popup.status_options"></select>'
         popup += '</select>'
 
-        return popup
+        divNode.innerHTML = popup
+
+        return divNode
 
     }
 
-
-
 })();
-
-function messageClick(townStatus) {
-    console.log(townStatus)
-    var selectedText = townStatus.options[townStatus.selectedIndex].innerHTML;
-    var status = townStatus.value;
-
-    var town = townStatus.name
-    console.log(town, status)
-
-
-
-}
