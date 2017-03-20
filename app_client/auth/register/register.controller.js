@@ -27,12 +27,11 @@
     };
 
     vm.onSubmit = function () {
-      console.log('Submitting registration');
-      console.log(vm.credentials);
+      // console.log('Submitting registration');
       authentication
         .register(vm.credentials)
         .error(function(err){
-          alert(err);
+          alert(err.message);
         })
         .then(function(){
           $location.path('home');

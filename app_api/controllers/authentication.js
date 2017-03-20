@@ -9,42 +9,66 @@ var sendJSONresponse = function(res, status, content) {
 
 module.exports.register = function(req, res) {
 
-  // if(!req.body.name || !req.body.email || !req.body.password) {
-  //   sendJSONresponse(res, 400, {
-  //     "message": "All fields required"
-  //   });
-  //   return;
-  // }
+  console.log('got register request')
 
-  var user = new User();
-
-  user.name = req.body.name;
-  user.email = req.body.email;
-  user.towns = req.body.towns;
-
-  user.not_yet = 251
-
-  user.setPassword(req.body.password);
-
-  user.save(function(err) {
-    var token;
-    token = user.generateJwt();
-    res.status(200);
-    res.json({
-      "token" : token
+  if(!req.body.name || !req.body.email || !req.body.password) {
+    sendJSONresponse(res, 400, {
+      "message": "All fields required"
     });
-  });
+    return;
+  }
+
+  User.findOne({$or: [{'name': req.body.name},  
+                      {'email': req.body.email}]}, function (err, userResponse) {
+
+    if(err) {
+      console.log(err)
+    }
+
+    if (userResponse) {
+      console.log('user or email already taken')
+      sendJSONresponse(res, 400, {
+      "message": "This username is already taken, please choose a different one."
+    });
+    return;
+
+    } else {
+
+      var user = new User();
+    
+      user.name = req.body.name;
+      user.email = req.body.email;
+      user.towns = req.body.towns;
+    
+      user.not_yet = 251
+
+      console.log('creating new user')
+    
+      user.setPassword(req.body.password);
+    
+      user.save(function(err) {
+        var token;
+        token = user.generateJwt();
+        res.status(200);
+        res.json({
+          "token" : token
+        });
+      });
+    
+    }
+
+});
 
 };
 
 module.exports.login = function(req, res) {
 
-  // if(!req.body.email || !req.body.password) {
-  //   sendJSONresponse(res, 400, {
-  //     "message": "All fields required"
-  //   });
-  //   return;
-  // }
+  if(!req.body.email || !req.body.password) {
+    sendJSONresponse(res, 400, {
+      "message": "All fields required"
+    });
+    return;
+  }
 
   passport.authenticate('local', function(err, user, info){
     var token;

@@ -5,40 +5,9 @@
         .controller('userCtrl', userCtrl);
 
 
-    userCtrl.$inject = ['$scope', '$routeParams', '$http', 'leafletData', 'meanUsers'];
+    userCtrl.$inject = ['$scope', '$routeParams', '$http', 'meanUsers'];
 
-    function userCtrl($scope, $routeParams, $http, leafletData, meanUsers) {
-
-        angular.extend($scope, {
-            vermont: {
-                lat: 43.9,
-                lng: -72.4,
-                zoom: 8
-            },
-            defaults: {
-                scrollWheelZoom: false
-            },
-            layers: {
-                baselayers: {
-                    osm: {
-                        name: 'Esri World_Topo_Map',
-                        url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-                        //url: 'http://{s}.tile.thunderforest.com/pioneer/{z}/{x}/{y}.png',
-                        type: 'xyz',
-                        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
-                        layerOptions: {
-                            "showOnSelector": false
-                        }
-                    },
-                },
-                overlays: {}
-            },
-            legend: {
-                position: 'bottomright',
-                colors: ['#ff7f00', '#377eb8', '#e41a1c', '#999999'],
-                labels: ['Hiking', 'Biking', 'Driving', 'Not yet']
-            }
-        });
+    function userCtrl($scope, $routeParams, $http, meanUsers) {
 
         var username = $routeParams.username
         var vm = this;
@@ -52,7 +21,9 @@
                 tabulateUserStats($scope)
                 $scope.dataHasLoaded = true
 
-                joinTopoJson($scope, $http, vm.user, leafletData)
+                console.log(vm.user)
+
+                leafletInit($scope)
 
             })
             .error(function(e) {
@@ -61,37 +32,46 @@
 
     }
 
-    function joinTopoJson($scope, $http, userData, leafletData) {
+    function leafletInit($scope) {
 
-        leafletData.getMap().then(function(map) {
+        $scope.style = function(feature) {
 
-          var customLayer = L.geoJson(null, {
-            style: function(feature) {
-              var status = userData.towns[feature.properties.fips6]
+              var status = $scope.vm.user.towns[feature.properties.fips6]
               var style_color = (styles[status] || styles['other']);
 
                 return { color: style_color,
                          fill: style_color,
                          weight: 1 };
             }
+
+        var mymap = L.map('mapid').setView([43.9, -72.4], 8);
+
+        L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        }).addTo(mymap);
+
+        mymap.attributionControl.addAttribution('Basemap &copy; esri; town boundaries from VCGI');
+
+          var customLayer = L.geoJson(null, {
+            style: $scope.style
           });
+
+          addLegend(mymap)
 
           $scope.worldLayer = omnivore.topojson("../data/towns.json", null, customLayer)
                 .on('ready', function(layer) {
 
                   this.eachLayer(function(marker) {
-                     var status = userData.towns[marker.feature.properties.fips6]
+                     var status = $scope.vm.user.towns[marker.feature.properties.fips6]
+                     var town = marker.feature.properties.town
 
                      // Bind a popup to each icon based on the same properties
-                     marker.bindPopup(marker.feature.properties.town + ': ' + status)
+                     marker.bindPopup(buildPopup(town, status))
 
                        });
 
                    })
 
-                .addTo(map);
-
-        });
+                .addTo(mymap);
 
     }
 
@@ -123,6 +103,38 @@
         $scope.vm.user.local.hiking = groupby.Hiking || 0
         $scope.vm.user.local.biking = groupby.Biking || 0
         $scope.vm.user.local.not_yet = groupby['Not yet'] || 0
+
+    }
+
+    function addLegend(map) {
+
+        var legend = L.control({position: 'bottomright'});
+
+        legend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend')
+            var names =  ['Hiking', 'Biking', 'Driving', 'Not yet']
+
+            var labels = []
+
+            for (var i = 0; i < names.length; i++) {
+                labels.push('<i style="background:' + styles[names[i]] + '"></i> ' + names[i]);
+            }
+
+            div.innerHTML = labels.join('<br>');
+            return div;
+        };
+
+        legend.addTo(map);
+    }
+
+    function buildPopup(town, status) {
+
+        var divNode = document.createElement('DIV');
+        var popup = town + ': ' + status
+        divNode.innerHTML = popup
+
+        return divNode
 
     }
 

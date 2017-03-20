@@ -1,6 +1,6 @@
 (function () {
 
-  angular.module('meanApp', ['ngRoute', 'leaflet-directive']);
+  angular.module('meanApp', ['ngRoute']);
 
   function config ($routeProvider, $locationProvider, $logProvider) {
     $routeProvider
@@ -34,15 +34,17 @@
     // use the HTML5 History API
     $locationProvider.html5Mode(true);
 
-    //turn off leaflet logging
-    $logProvider.debugEnabled(false);
-
   }
 
   function run($rootScope, $location, $http, authentication) {
     $rootScope.$on('$routeChangeStart', function(event, nextRoute, currentRoute) {
       if ($location.path() === '/profile' && !authentication.isLoggedIn()) {
         $location.path('/');
+      }
+
+      // automatically direct user to their editable map
+      if ($location.path() == '/users/' + authentication.currentUser().name) {
+        $location.path('/profile');
       }
     });
   }

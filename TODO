@@ -2,8 +2,7 @@ TODO
 ---
 
 make map directive and add edit=false (or something) to differentiate
-remove angular leaflet directive from users.view.html
 
-change "full name" to username and prevent any spaces/etc
-handle 400 responses with registration
-can't have the same username, all fields must be filled in, etc
+Add location field for registration
+
+generate new secret for users.js
