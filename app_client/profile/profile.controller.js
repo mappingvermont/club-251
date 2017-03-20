@@ -29,6 +29,8 @@
 
         $scope.messageClick = function() {
 
+            console.log($scope.popup)
+
             $scope.vm.user.towns[$scope.popup.fips6] = $scope.popup.status
             $scope.worldLayer.setStyle($scope.style);
 
@@ -95,6 +97,10 @@
 
             $compile(e.popup._contentNode)($scope);
 
+        })
+
+        mymap.on('popupclose', function(e){
+            e.popup._source.feature.properties.status = $scope.popup.status
         })
 
     }
