@@ -29,7 +29,7 @@
 
         $scope.messageClick = function() {
 
-            console.log($scope.popup)
+            //console.log($scope.popup)
 
             $scope.vm.user.towns[$scope.popup.fips6] = $scope.popup.status
             $scope.worldLayer.setStyle($scope.style);

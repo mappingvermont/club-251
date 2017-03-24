@@ -16,7 +16,7 @@
       .success(function(data) {
         vm.users = data;
 
-        console.log(vm.users);
+//        console.log(vm.users);
 
       })
       .error(function (e) {

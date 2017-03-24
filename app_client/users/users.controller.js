@@ -21,7 +21,7 @@
                 tabulateUserStats($scope)
                 $scope.dataHasLoaded = true
 
-                console.log(vm.user)
+                //console.log(vm.user)
 
                 leafletInit($scope)
 
