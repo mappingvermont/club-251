@@ -11,7 +11,7 @@
           data: '=',
           onClick: '&'
       },
-      templateUrl: '/common/directives/leaderboard/leaderboard.template.html',
+      templateUrl: 'common/directives/leaderboard/leaderboard.template.html',
        link: function(scope, iElement, iAttrs) {
 
         var tip = d3.tip()

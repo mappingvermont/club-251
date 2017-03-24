@@ -10,13 +10,13 @@
 
     var getUsers = function () {
       // console.log('calling find all users')
-      return $http.get('/api/users', {
+      return $http.get('api/users', {
       });
     };
 
     var singleUser = function (username) {
       //console.log('calling singleUser for: ' + username)
-      return $http.get('/api/users/' + username, {
+      return $http.get('api/users/' + username, {
       });
     };
 

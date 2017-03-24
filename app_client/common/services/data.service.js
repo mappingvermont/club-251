@@ -8,7 +8,7 @@
   function meanData ($http, authentication) {
 
     var getProfile = function () {
-      return $http.get('/api/profile', {
+      return $http.get('api/profile', {
         headers: {
           Authorization: 'Bearer '+ authentication.getToken()
         }
@@ -18,7 +18,7 @@
     var setProfile = function (input) {
       // console.log('in set prof')
       // console.log(authentication.getToken())
-      return $http.put('/api/profile/' + input.fips6, input, {
+      return $http.put('api/profile/' + input.fips6, input, {
         headers: {
           Authorization: 'Bearer '+ authentication.getToken(),
         }

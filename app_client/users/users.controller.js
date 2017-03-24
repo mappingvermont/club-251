@@ -57,7 +57,7 @@
 
           addLegend(mymap)
 
-          $scope.worldLayer = omnivore.topojson("../data/towns.json", null, customLayer)
+          $scope.worldLayer = omnivore.topojson("data/towns.json", null, customLayer)
                 .on('ready', function(layer) {
 
                   this.eachLayer(function(marker) {

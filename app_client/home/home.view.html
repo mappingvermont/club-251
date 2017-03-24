@@ -1,5 +1,6 @@
 <navigation></navigation>
 
+<base href="/projects/club-251/" />
 <div class="container">
   
   <h1>Welcome to Club 251!</h1>
@@ -9,7 +10,7 @@
 
   Or, check out our leaderboard: <br>
   <div ng-repeat="u in vm.users | orderBy:'total':true"><br>
-    <a ng-href="/users/{{u.name}}">{{u.name}}</a> has been to {{u.total}} towns!
+    <a ng-href="users/{{u.name}}">{{u.name}}</a> has been to {{u.total}} towns!
     <leaderboard data='u'></leaderboard>
   </div>
   <br>
