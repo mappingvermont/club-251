@@ -2,7 +2,5 @@ TODO
 ---
 
 make map directive and add edit=false (or something) to differentiate
-
 Add location field for registration
 
-generate new secret for users.js
