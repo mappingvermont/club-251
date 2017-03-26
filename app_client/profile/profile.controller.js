@@ -56,8 +56,27 @@
 
         var mymap = L.map('mapid').setView([43.9, -72.4], 8);
 
-        L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        var streets = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
         }).addTo(mymap);
+
+        var topo = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        });
+
+        var baseLayers = {
+          "Streets": streets,
+          "Topo": topo
+        };
+
+        var ltLayer = L.geoJson(null, {
+            style: function(feature) {
+            return { color: '#1a6313' };
+            }
+           });
+
+        var lt = omnivore.geojson("data/long-trail.geojson", null, ltLayer)
+        var overlays = {"Long Trail": lt};
+
+        L.control.layers(baseLayers, overlays).addTo(mymap);
 
         mymap.attributionControl.addAttribution('Basemap &copy; esri; town boundaries from VCGI');
 
