@@ -42,10 +42,8 @@
                 right: 0,
                 bottom: 25
             },
-            width = window.innerWidth,
-            width = width - margins.left - margins.right,
-            height = 50 - margins.top - margins.bottom
-
+            height = 50 - margins.top - margins.bottom,
+            width = '100%'
 
         var svg = d3.select(iElement[0]).select("#chart")
             .attr('width', width)
