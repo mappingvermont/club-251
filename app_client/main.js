@@ -43,7 +43,7 @@
       }
 
       // automatically direct user to their editable map
-      if ($location.path() == '/users/' + authentication.currentUser().name) {
+      if (authentication.isLoggedIn() && ($location.path() == '/users/' + authentication.currentUser().name)) {
         $location.path('/profile');
       }
     });
