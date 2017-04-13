@@ -67,6 +67,18 @@
           "Topo": topo
         };
 
+        L.Control.geocoder({defaultMarkGeocode: false
+                }).on('markgeocode', function(e) {
+          var bbox = e.geocode.bbox;
+          var poly = L.polygon([
+               bbox.getSouthEast(),
+               bbox.getNorthEast(),
+               bbox.getNorthWest(),
+               bbox.getSouthWest()
+           ])
+            mymap.fitBounds(poly.getBounds());
+           }).addTo(mymap);
+
         var ltLayer = L.geoJson(null, {
             style: function(feature) {
             return { color: '#1a6313' };

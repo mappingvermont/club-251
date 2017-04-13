@@ -1,0 +1,74 @@
+{
+  "name": "leaflet-control-geocoder",
+  "version": "1.5.4",
+  "description": "Extendable geocoder with builtin support for Nominatim, Bing, Google, Mapbox, Photon, What3Words, MapQuest, Mapzen, HERE",
+  "main": "dist/Control.Geocoder.js",
+  "scripts": {
+    "prepublish": "sh ./scripts/build.sh",
+    "publish": "sh ./scripts/publish.sh",
+    "postpublish": "sh ./scripts/postpublish.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/perliedman/leaflet-control-geocoder.git"
+  },
+  "keywords": [
+    "leaflet",
+    "geocoder",
+    "locations",
+    "nominatim",
+    "bing",
+    "google",
+    "mapbox",
+    "photon",
+    "what3words",
+    "mapquest",
+    "mapzen",
+    "here"
+  ],
+  "author": {
+    "name": "Per Liedman",
+    "email": "per@liedman.net"
+  },
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/perliedman/leaflet-control-geocoder/issues"
+  },
+  "browserify-shim": {
+    "leaflet": "global:L"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "browserify": "^11.0.1",
+    "browserify-shim": "^3.8.10",
+    "derequire": "^2.0.3",
+    "es3ify": "^0.1.4"
+  },
+  "gitHead": "5f47492985d8dfba23270a25a7ececeabf164922",
+  "homepage": "https://github.com/perliedman/leaflet-control-geocoder#readme",
+  "_id": "leaflet-control-geocoder@1.5.4",
+  "_shasum": "8f977dba9da0cbbebfa19659cbf0f49f6e268620",
+  "_from": "leaflet-control-geocoder@*",
+  "_npmVersion": "3.10.8",
+  "_nodeVersion": "5.10.1",
+  "_npmUser": {
+    "name": "liedman",
+    "email": "per@liedman.net"
+  },
+  "maintainers": [
+    {
+      "name": "liedman",
+      "email": "per.liedman@kartena.se"
+    }
+  ],
+  "dist": {
+    "shasum": "8f977dba9da0cbbebfa19659cbf0f49f6e268620",
+    "tarball": "https://registry.npmjs.org/leaflet-control-geocoder/-/leaflet-control-geocoder-1.5.4.tgz"
+  },
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/leaflet-control-geocoder-1.5.4.tgz_1478243011559_0.8490096358582377"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/leaflet-control-geocoder/-/leaflet-control-geocoder-1.5.4.tgz"
+}
