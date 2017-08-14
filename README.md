@@ -14,10 +14,11 @@ A simple application to track progress in the 251 Club!
 `nodemon` - to run the server and watch the backend code
 `gulp` to monitor front end code + lint
 
-Edit locally at `localhost:3000`
+View locally at `localhost:3000`
 
-### Deply
+### Deploy
 
+Run `gulp scripts` to compile the app into `app.min.js` or any changes won't be visible
 Use `pm2` to monitor + run the application
 
 ### Credits
