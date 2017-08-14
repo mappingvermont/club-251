@@ -2,17 +2,27 @@
 
 <base href="/projects/club-251/" />
 <div class="container">
-  
+
   <h1>Welcome to Club 251!</h1>
 
   <p ng-hide="vm.isLoggedIn">Won't you please <a href="login">sign in</a> or <a href="register">register</a>?</p>
   <p ng-show="vm.isLoggedIn">Edit your map <a href="profile">here</a>.<br></p>
 
   Or, check out our leaderboard: <br>
-  <div ng-repeat="u in vm.users | orderBy:'total':true"><br>
+  <div ng-repeat="u in vm.users | orderBy:'total':true | startFrom:vm.currentPage*vm.pageSize | limitTo:vm.pageSize"><br>
     <a ng-href="users/{{u.name}}">{{u.name}}</a> has been to {{u.total}} towns!
     <leaderboard data='u'></leaderboard>
   </div>
   <br>
+
+  <!-- Kind of a pain given that these list elements can't be easily disabled by angular
+  divs or buttons would be easier, but then we lose the slick bootstrap paging -->
+  <ul class="pager">
+    <li ng-class="{'disabled':vm.currentPage == 0}" class="previous"
+        ng-click="vm.currentPage == 0 ? vm.currentPage : vm.currentPage=vm.currentPage-1"><a href="#">«</a></li>
+    <li class="next" ng-class="{'disabled':vm.currentPage >= vm.users.length/vm.pageSize - 1}"
+        ng-click="vm.currentPage >= vm.users.length/vm.pageSize - 1 ?
+        vm.currentPage: vm.currentPage=vm.currentPage+1"><a href="#">»</a></li>
+  </ul>
 
 </div>

@@ -48,7 +48,7 @@
       }
     });
   }
-  
+
   angular
     .module('meanApp')
     .config(['$routeProvider', '$locationProvider', '$logProvider', config])
