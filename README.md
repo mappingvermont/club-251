@@ -1,6 +1,6 @@
-# club-251
+# VT-Town-Tracker
 
-A simple application to track progress in the 251 Club!
+A simple application to track how many towns you've been to in Vermont
 
 ### Install dependencies
 
