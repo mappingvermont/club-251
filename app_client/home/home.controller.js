@@ -5,8 +5,8 @@
     .controller('homeCtrl', homeCtrl)
     .filter('startFrom', function() { // add custom filter
         return function(input, start) {
-            console.log(input)
-            console.log(start)
+            //console.log(input)
+            //console.log(start)
             start = +start; //parse to int
             return input.slice(start);
         }
@@ -27,7 +27,7 @@
     vm.numberOfPages=function(){
         return Math.ceil(vm.users.length/vm.pageSize);
     }
-    console.log(vm.numberOfPages())
+    //console.log(vm.numberOfPages())
 
     meanUsers.getUsers()
       .success(function(data) {
